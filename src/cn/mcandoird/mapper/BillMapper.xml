@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mcandoird.mapper.BillMapper">
+    <select id="getAll" resultType="cn.mcandoird.pojo.Bill">
+        select *from bill order by date asc
+    </select>
+
+    <select id="getMax" resultType="cn.mcandoird.pojo.Bill">
+        select * FROM bill where money=(SELECT MAX(money) FROM bill)
+    </select>
+
+    <select id="getBillById" resultType="cn.mcandoird.pojo.Bill" parameterType="int">
+         select * FROM bill where id=#{id}
+   </select>
+
+    <select id="getBillByDate" resultType="cn.mcandoird.pojo.Bill" parameterType="java.util.Date">
+        select  * from  bill where date=#{date}
+    </select>
+
+    <select id="getPage" parameterType="map" resultType="bill">
+         select * from  bill order by date desc ,id DESC   LIMIT #{start},#{size}
+    </select>
+
+    <select id="getCount" resultType="int">
+        SELECT COUNT(*) FROM bill;
+    </select>
+    <insert id="addBill" parameterType="bill">
+          INSERT  INTO  bill(date,money,pay_mode,type,msg) VALUES(#{date},#{money},#{pay_mode},#{type} ,#{msg})
+    </insert>
+    <delete id="delBillById" parameterType="int">
+        delete from  bill  where id=#{id}
+    </delete>
+    <update id="updateBill" parameterType="bill">
+       update bill set date=#{date},money=#{money}, pay_mode=#{pay_mode},type=#{type},msg=#{msg}  where id=#{id}
+    </update>
+
+    <select id="sum" parameterType="java.util.Date" resultType="double">
+      SELECT SUM(money) FROM bill WHERE DATE_FORMAT(DATE,'%Y%m') = DATE_FORMAT( #{date}, '%Y%m' )
+    </select>
+
+
+    <select id="findAllMonth" resultType="string">
+     SELECT DISTINCT DATE_FORMAT(DATE,'%Y-%m') AS date FROM bill  ORDER BY date ASC
+    </select>
+
+    <select id="getCountByPay_modeAndDate" parameterType="java.util.Map" resultType="int">
+        SELECT COUNT(*) FROM bill WHERE DATE_FORMAT(DATE,'%Y%m') = DATE_FORMAT(#{date}, '%Y%m' ) AND pay_mode = #{pay_mode}
+    </select>
+
+
+    <select id="getAllPay_mode" resultType="string" parameterType="java.util.Date">
+         SELECT DISTINCT pay_mode FROM bill  WHERE DATE_FORMAT(DATE,'%Y%m') = DATE_FORMAT( #{date}, '%Y%m' )
+    </select>
+
+    <select id="getSumByPay_modeAndDate" resultType="double" parameterType="java.util.Map">
+        SELECT SUM(money) FROM bill WHERE DATE_FORMAT(DATE,'%Y%m') = DATE_FORMAT( #{date}, '%Y%m' ) AND pay_mode =#{pay_mode}
+    </select>
+</mapper>
